@@ -4,6 +4,7 @@ import Logo from "@/components/Logo.tsx";
 import { NewChatDialog } from "@/components/NewChat.tsx";
 import { useChatStore } from "@/stores";
 import { formatHKD } from "@/utils/currency.ts";
+import { ContentCopyOutlined, FileCopyOutlined } from "@mui/icons-material";
 import ChatIcon from "@mui/icons-material/Chat";
 import CreditScoreIcon from "@mui/icons-material/CreditScore";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -29,6 +30,8 @@ import { ReactElement, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 
 function ChatListItem(props: { chat: Chat }): ReactElement {
+  const { chat } = props;
+
   const chatStore = useChatStore();
   const navigate = useNavigate();
 
@@ -42,6 +45,15 @@ function ChatListItem(props: { chat: Chat }): ReactElement {
   const deleteChat = () => {
     chatStore.removeChat(props.chat.id);
     navigate(`/`);
+  };
+
+  const duplicateChatWithMessages = () => {
+    const id = chatStore.newChat({ ...chat, createdAt: undefined, updatedAt: undefined });
+    navigate(`/chats/${id}/edit`);
+  };
+  const duplicateChatWithoutMessages = () => {
+    const id = chatStore.newChat({ ...chat, messages: undefined, createdAt: undefined, updatedAt: undefined });
+    navigate(`/chats/${id}/edit`);
   };
 
   return (
@@ -70,6 +82,28 @@ function ChatListItem(props: { chat: Chat }): ReactElement {
         <ListItemText primary={props.chat.name} secondary={props.chat.hashtag()} />
       </ListItemButton>
       <Menu anchorEl={anchorRef.current} open={menuOpen} onClose={handleMenuClose}>
+        <MenuItem
+          onClick={() => {
+            handleMenuClose();
+            duplicateChatWithMessages();
+          }}
+        >
+          <ListItemIcon>
+            <FileCopyOutlined />
+          </ListItemIcon>
+          <ListItemText>Duplicate Chat (with Messages)</ListItemText>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleMenuClose();
+            duplicateChatWithoutMessages();
+          }}
+        >
+          <ListItemIcon>
+            <ContentCopyOutlined />
+          </ListItemIcon>
+          <ListItemText>Duplicate Chat (without Messages)</ListItemText>
+        </MenuItem>
         <MenuItem
           onClick={() => {
             handleMenuClose();

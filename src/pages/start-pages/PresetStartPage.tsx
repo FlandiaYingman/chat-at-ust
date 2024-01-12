@@ -91,8 +91,8 @@ export default function PresetStartPage(): ReactElement {
         />
         <Box sx={{ flexGrow: 1 }}>
           <VList style={{ height: "100%" }}>
-            {filterPresets(presets[tabValue], search).map((preset) => (
-              <Box key={preset.name} sx={{ m: 1 }}>
+            {filterPresets(presets[tabValue], search).map((preset, i) => (
+              <Box key={i} sx={{ m: 1 }}>
                 <PresetCard preset={preset} />
               </Box>
             ))}

@@ -1,5 +1,5 @@
-import promptsChatGPTAtHKUST from "./chatgpt@hkust-prompts.tsx";
-import promptsChatPrompts from "./prompts.chat-prompts.json";
+import promptsChatAtUST from "./chat-at-ust-prompts.yaml";
+import promptsPromptsDotChat from "./prompts-dot-chat-prompts.yaml";
 import Fuse from "fuse.js";
 
 export type Preset = {
@@ -8,8 +8,8 @@ export type Preset = {
   userPromptTemplate?: string;
 };
 
-export const presetsChatAtHKUST = promptsChatGPTAtHKUST;
-export const presetsPromptsChat = promptsChatPrompts;
+export const presetsChatAtHKUST = promptsChatAtUST as Preset[];
+export const presetsPromptsChat = promptsPromptsDotChat as Preset[]
 export const presets: Record<string, Preset[]> = {
   "chat@hkust": presetsChatAtHKUST,
   "prompts.chat": presetsPromptsChat,

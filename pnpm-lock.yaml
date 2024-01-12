@@ -53,6 +53,9 @@ dependencies:
   marked:
     specifier: ^11.1.1
     version: 11.1.1
+  marked-katex-extension:
+    specifier: ^5.0.0
+    version: 5.0.0(katex@0.16.9)(marked@11.1.1)
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -1311,6 +1314,10 @@ packages:
 
   /@types/katex@0.16.6:
     resolution: {integrity: sha512-rZYO1HInM99rAFYNwGqbYPxHZHxu2IwZYKj4bJ4oh6edVrm1UId8mmbHIZLBtG253qU6y3piag0XYe/joNnwzQ==}
+    dev: false
+
+  /@types/katex@0.16.7:
+    resolution: {integrity: sha512-HMwFiRujE5PjrgwHQ25+bsLJgowjGjm5Z8FVSf0N6PwgJrwxH0QxzHYDcKsTfV3wva0vzrpqMTJS2jXPr5BMEQ==}
     dev: false
 
   /@types/mdast@4.0.3:
@@ -2963,6 +2970,17 @@ packages:
 
   /markdown-table@3.0.3:
     resolution: {integrity: sha512-Z1NL3Tb1M9wH4XESsCDEksWoKTdlUafKc4pt0GRwjUyXaCFZ+dc3g2erqB6zm3szA2IUSi7VnPI+o/9jnxh9hw==}
+    dev: false
+
+  /marked-katex-extension@5.0.0(katex@0.16.9)(marked@11.1.1):
+    resolution: {integrity: sha512-koGhYnmKaF5Zobz+63tmoO+v7C0z9RWtdJonh8aLAFNp03uXIleV4OswV/OHrSiquKxBCmhAwBTCVgYRHHpwnQ==}
+    peerDependencies:
+      katex: '>=0.16 <0.17'
+      marked: '>=4 <12'
+    dependencies:
+      '@types/katex': 0.16.7
+      katex: 0.16.9
+      marked: 11.1.1
     dev: false
 
   /marked@11.1.1:

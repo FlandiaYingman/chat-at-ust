@@ -26,6 +26,7 @@
     "js-tiktoken": "^1.0.7",
     "katex": "^0.16.9",
     "marked": "^11.1.1",
+    "marked-katex-extension": "^5.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^9.0.0",

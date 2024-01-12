@@ -71,6 +71,10 @@ export class Chat implements ChatData {
   }
 }
 
+export function compareChat(a: Chat, b: Chat): number {
+  return -(a.updatedAt.valueOf() - b.updatedAt.valueOf());
+}
+
 export type MessageRole = "system" | "user" | "assistant" | "error";
 
 export interface Message {

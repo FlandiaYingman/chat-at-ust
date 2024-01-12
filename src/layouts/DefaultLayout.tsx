@@ -109,10 +109,6 @@ function ChatListItem(props: { chat: Chat }): ReactElement {
 }
 
 function ChatList(props: { chats: Chat[] }): ReactElement {
-  // sort chats by their last updated time
-  console.log(props.chats);
-  props.chats.sort((a, b) => b.updatedAt.valueOf() - a.updatedAt.valueOf());
-  console.log(props.chats);
   return (
     <List sx={{ overflowY: "auto" }}>
       {props.chats.map((chat) => (
@@ -165,11 +161,7 @@ function NavigationDrawer(): ReactElement {
           >
             New Chat!
           </Button>
-          <ChatList
-            chats={Object.values(chatStore.chats()).sort(
-              (a, b) => a.updatedAt.getMilliseconds() - b.updatedAt.getMilliseconds(),
-            )}
-          />
+          <ChatList chats={Object.values(chatStore.chats())} />
         </Stack>
       </Drawer>
       <NewChatDialog open={newChatDialogOpen} onClose={() => setNewChatDialogOpen(false)} />

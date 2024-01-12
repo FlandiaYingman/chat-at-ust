@@ -1,4 +1,4 @@
-import { Chat, ChatData } from "@/chats";
+import { Chat, ChatData, compareChat } from "@/chats";
 import superjson, { serialize } from "superjson";
 import { v1 } from "uuid";
 import { create } from "zustand";
@@ -54,15 +54,12 @@ const useChatStore = create(
   persist<ChatState>(
     (set, get) => ({
       data: {},
-      chats: () =>
-        Object.fromEntries(
-          Object.entries(get().data)
-            .sort(
-              ([, aData], [, bData]) =>
-                (aData.updatedAt?.getMilliseconds() ?? 0) - (bData.updatedAt?.getMilliseconds() ?? 0),
-            )
-            .map(([id, data]) => [id, new Chat(data)]),
-        ),
+      chats: () => {
+        const dataEntries: [string, ChatData][] = Object.entries(get().data);
+        const chatEntries: [string, Chat][] = dataEntries.map(([id, data]) => [id, new Chat(data)]);
+        chatEntries.sort(([, aChat], [, bChat]) => compareChat(aChat, bChat));
+        return Object.fromEntries(chatEntries);
+      },
 
       newChat: (chat) => {
         const id = v1();

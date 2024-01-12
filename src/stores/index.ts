@@ -40,7 +40,7 @@ interface ChatState {
   data: Record<string, ChatData>;
   chats: () => Record<string, Chat>;
 
-  newChat: (chat: ChatParams) => string;
+  newChat: (chat: ChatParams | ChatData) => string;
   removeChat: (id: string) => void;
 
   chat: (id: string) => Chat | null;

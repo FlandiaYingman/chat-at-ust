@@ -140,7 +140,7 @@ function NavigationDrawer(): ReactElement {
           <Logo sx={{ px: 2, flexShrink: 0, flexGrow: 0 }} ActionAreaProps={{ sx: { py: 2 } }} />
           <Divider sx={{ flexShrink: 0, flexGrow: 0 }} />
           <Typography sx={{ textAlign: "center" }} variant="overline">
-            Balance: <b>{formatHKD(chatStore.balance)}</b>
+            Balance: <b>{isNaN(chatStore.balance) ? "N/A" : formatHKD(chatStore.balance)}</b>
           </Typography>
           <Button
             sx={{ mx: 8, flexShrink: 0, flexGrow: 0 }}

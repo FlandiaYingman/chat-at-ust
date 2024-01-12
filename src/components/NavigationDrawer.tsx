@@ -44,7 +44,11 @@ function ChatListItem(props: { chat: Chat }): ReactElement {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const deleteChat = () => {
     chatStore.removeChat(props.chat.id);
-    navigate(`/`);
+    if (Object.keys(chatStore.chats()).length === 0) {
+      navigate("/");
+    } else {
+      navigate(`/chats/${Object.values(chatStore.chats())[0].id}`);
+    }
   };
 
   const duplicateChatWithMessages = () => {

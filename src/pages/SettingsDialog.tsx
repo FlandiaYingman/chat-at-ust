@@ -1,5 +1,5 @@
-import { useChatStore, useSettingsStore } from "@/stores";
 import { getBalance } from "@/chats/balance.ts";
+import { useChatStore, useSettingsStore } from "@/stores";
 import {
   Button,
   Dialog,
@@ -7,10 +7,11 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Link,
   Stack,
   TextField,
 } from "@mui/material";
-import React, { type ReactElement } from "react";
+import React, { PropsWithChildren, type ReactElement } from "react";
 
 export default function SettingsDialog({ open, onClose }: { open: boolean; onClose: () => void }): ReactElement {
   const settingsStore = useSettingsStore();
@@ -26,14 +27,19 @@ export default function SettingsDialog({ open, onClose }: { open: boolean; onClo
     onClose();
   };
 
+  const InstructionLink = ({ children }: PropsWithChildren) => (
+    <Link href="https://itsc.hkust.edu.hk/services/it-infrastructure/azure-openai-api-service#subscription">
+      {children}
+    </Link>
+  );
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Settings</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          Follow the instructions{" "}
-          <a href="https://itsc.hkust.edu.hk/services/it-infrastructure/azure-openai-api-service">here</a> to retrieve
-          your API key. You can enter either the primary or secondary API key.
+        <DialogContentText gutterBottom>
+          Follow <InstructionLink>the instruction</InstructionLink> to obtain your API key. Either the primary key or
+          secondary key will work.
         </DialogContentText>
         <Stack>
           <TextField

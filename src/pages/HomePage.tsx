@@ -31,7 +31,7 @@ function HomePage(): ReactElement {
       <Typography variant="h4" gutterBottom>
         Quick Start
       </Typography>
-      <Typography gutterBottom>
+      <Typography component='div' gutterBottom>
         <NewChatPanel />
       </Typography>
       <Spacer />

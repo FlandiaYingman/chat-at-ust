@@ -23,7 +23,6 @@ function PresetCard({ preset }: { preset: Preset }): ReactElement {
   const navigate = useNavigate();
   const chatStore = useChatStore();
   const createChatFromPreset = () => {
-    console.log("createChatFromPreset", preset);
     const id = chatStore.newChat({
       name: preset.name,
       deployment: "gpt-4",

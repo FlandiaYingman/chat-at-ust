@@ -1,8 +1,8 @@
 import { Chat, ChatData, compareChat } from "@/chats";
-import superjson, { serialize } from "superjson";
+import superjson from "superjson";
 import { v1 } from "uuid";
 import { create } from "zustand";
-import { combine, persist, StorageValue } from "zustand/middleware";
+import { combine, persist } from "zustand/middleware";
 
 const useSettingsStore = create(
   persist(
@@ -102,18 +102,11 @@ const useChatStore = create(
       storage: {
         getItem: (name) => {
           const str = localStorage.getItem(name);
-          if (str) {
-            const value = superjson.parse(str) as StorageValue<ChatState>;
-            console.log("deserialize", str, value);
-            return value;
-          } else {
-            return null;
-          }
+          if (str) return superjson.parse(str);
+          else return null;
         },
         setItem: (name, value) => {
-          console.log(serialize(value));
           const str = superjson.stringify(value);
-          console.log("serialize", value, str);
           localStorage.setItem(name, str);
         },
         removeItem: (name) => {

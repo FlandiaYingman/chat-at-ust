@@ -21,7 +21,6 @@ function ExistingChatCard({ chat }: { chat: Chat }): ReactElement {
   const chatStore = useChatStore();
 
   const createChatFromExistingChat = () => {
-    console.log("createChatFromExistingChat", chat);
     const id = chatStore.newChat({
       name: chat.name,
       deployment: chat.deployment,

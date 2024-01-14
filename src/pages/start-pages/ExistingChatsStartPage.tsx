@@ -29,7 +29,7 @@ function ExistingChatCard({ chat }: { chat: Chat }): ReactElement {
       userPromptTemplate: chat.userPromptTemplate,
       temperature: chat.temperature,
       maxResponseTokens: chat.maxResponseTokens,
-      maxHistoryChats: chat.maxHistoryChats,
+      messageHistoryLimit: chat.messageHistoryLimit,
     });
     navigate(`/chats/${id}`);
   };

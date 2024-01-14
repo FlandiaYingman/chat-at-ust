@@ -10,6 +10,7 @@ import { formatUSD } from "@/utils/currency.ts";
 import { isMarkdown } from "@/utils/markdown.ts";
 import { faMarkdown } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import AssistantIcon from "@mui/icons-material/Assistant";
 import PersonIcon from "@mui/icons-material/Person";
 import SendIcon from "@mui/icons-material/Send";
@@ -31,35 +32,43 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import React, { type ReactElement } from "react";
+import { grey } from "@mui/material/colors";
+import React, { type ReactElement, useState } from "react";
 import { useParams } from "react-router";
+import { v4 } from "uuid";
 
-function ChatBalloon(props: { message: Message; onDelete: () => void }): ReactElement {
+function Message(props: { message?: Message; history?: boolean; completing?: boolean }): ReactElement {
+  const { message = { role: "assistant", content: "" }, history = false, completing = false } = props;
+
   const theme = useTheme();
 
   const [menuOpen, setMenuOpen] = React.useState(false);
-  const [markdown, setMarkdown] = React.useState(isMarkdown(props.message.content));
+  const [markdown, setMarkdown] = React.useState(isMarkdown(message.content));
 
   const content = () => {
-    if (props.message.content === "") {
+    if (completing) {
+      return <Skeleton />;
+    }
+
+    if (message.content === "") {
       return (
         <Typography variant="body2" color="text.secondary" fontStyle="italic">
           (The prompt is empty.)
         </Typography>
       );
     }
-    if (props.message.role === "error") {
+    if (message.role === "error") {
       return (
         <ChatMarkdown variant="body2" color="text.secondary" fontStyle="italic">
-          {props.message.content}
+          {message.content}
         </ChatMarkdown>
       );
     }
 
     if (markdown) {
-      return <ChatMarkdown>{props.message.content}</ChatMarkdown>;
+      return <ChatMarkdown>{message.content}</ChatMarkdown>;
     } else {
-      return <Typography sx={{ whiteSpace: "break-spaces" }}>{props.message.content}</Typography>;
+      return <Typography sx={{ whiteSpace: "break-spaces" }}>{message.content}</Typography>;
     }
   };
 
@@ -76,12 +85,12 @@ function ChatBalloon(props: { message: Message; onDelete: () => void }): ReactEl
             sx={{
               width: "1.75em",
               height: "1.75em",
-              bgcolor: props.message.role !== "error" ? theme.palette.primary.main : theme.palette.error.main,
+              bgcolor: message.role !== "error" ? theme.palette.primary.main : theme.palette.error.main,
             }}
             onClick={() => setMenuOpen(!menuOpen)}
           >
             {(() => {
-              switch (props.message.role) {
+              switch (message.role) {
                 case "user":
                   return <PersonIcon />;
                 case "assistant":
@@ -107,7 +116,10 @@ function ChatBalloon(props: { message: Message; onDelete: () => void }): ReactEl
         </Collapse>
       </Stack>
 
-      <Paper sx={{ p: 2, height: "fit-content", flexGrow: 1 }} variant="outlined">
+      <Paper
+        sx={{ p: 2, height: "fit-content", flexGrow: 1, ...(history ? { background: grey[100] } : {}) }}
+        variant="outlined"
+      >
         <Typography
           variant="body2"
           sx={{
@@ -123,30 +135,47 @@ function ChatBalloon(props: { message: Message; onDelete: () => void }): ReactEl
   );
 }
 
-function LoadingChatBalloon(): ReactElement {
-  const theme = useTheme();
+function Messages(props: { messages: Message[]; messageHistoryLimit: number; completing: boolean }): ReactElement {
+  const { completing, messageHistoryLimit } = props;
+  const messages = props.messages.map((m) => ({ ...m, id: v4() }));
+
+  const historyMessages = messages.slice(0, -messageHistoryLimit * 2);
+  const activeMessages = messages.slice(-messageHistoryLimit * 2);
+
+  const [showHistory, setShowHistory] = useState(false);
 
   return (
-    <Stack sx={{ my: 2 }} spacing={0} direction="row">
-      <IconButton
-        sx={{
-          p: 0,
-          alignSelf: "start",
-        }}
-      >
-        <Avatar
-          sx={{
-            width: 32,
-            height: 32,
-            bgcolor: theme.palette.primary.main,
-          }}
-        >
-          <AssistantIcon />
-        </Avatar>
-      </IconButton>
-      <Box sx={{ width: "100%" }}>
-        <Skeleton animation="wave" sx={{ mx: 2 }} />
-      </Box>
+    <Stack sx={{ my: 2 }} spacing={2}>
+      {/* History Messages */}
+      {historyMessages.length > 0 && (
+        <>
+          <Collapse in={showHistory}>
+            <Stack spacing={2}>
+              {historyMessages.map((m) => (
+                <Message key={m.id} message={m} history />
+              ))}
+            </Stack>
+          </Collapse>
+          <Divider onClick={() => setShowHistory(!showHistory)} sx={{ cursor: "pointer" }}>
+            <Typography variant="caption" color="text.secondary">
+              Message History Limit (={messageHistoryLimit}) Exceeded. Earlier Messages will be Hidden.{" "}
+              {showHistory ? (
+                <Visibility fontSize="small" sx={{ mb: -0.5 }} />
+              ) : (
+                <VisibilityOff fontSize="small" sx={{ mb: -0.5 }} />
+              )}
+            </Typography>
+          </Divider>
+        </>
+      )}
+
+      {/* Active Messages */}
+      {activeMessages.map((m) => (
+        <Message message={m} key={m.id} />
+      ))}
+
+      {/* Skeleton Message */}
+      {completing && <Message completing />}
     </Stack>
   );
 }
@@ -163,19 +192,7 @@ export default function ChatPage(): ReactElement {
   const [completing, setCompleting] = React.useState(false);
 
   if (chat == null) {
-    return (
-      <Container
-        maxWidth="md"
-        sx={{
-          my: 8,
-          width: "100vw",
-        }}
-      >
-        <Box sx={{ m: 2 }}>
-          <Typography variant="h3">404 Not Found</Typography>
-        </Box>
-      </Container>
-    );
+    return <></>;
   }
 
   const refreshBalance = () => {
@@ -185,28 +202,20 @@ export default function ChatPage(): ReactElement {
   };
 
   const complete = (): void => {
-    if (completing) {
-      return;
-    } else {
-      setCompleting(true);
-    }
+    if (completing) return;
+    setCompleting(true);
 
-    const completingChat = chat.newMessage("user", prompt);
+    const newChat = chat.newMessage("user", prompt);
 
-    chatStore.setChat(completingChat);
+    chatStore.setChat(newChat);
     setPrompt("");
 
-    completeChat(completingChat, settingsStore.azureApiKey, settingsStore.azureApiUrl)
+    completeChat(newChat, settingsStore.azureApiKey, settingsStore.azureApiUrl)
       .then(
-        (chat) => {
-          chatStore.setChat(chat);
-          setCompleting(false);
-        },
-        (error) => {
-          console.error("uncaught error", error);
-          setCompleting(false);
-        },
+        (chat) => chatStore.setChat(chat),
+        (error) => console.error(error),
       )
+      .then(() => setCompleting(false))
       .then(() => refreshBalance());
   };
   const { tokens, price } = useTokenizer(DeploymentMap[chat.deployment], prompt);
@@ -229,18 +238,7 @@ export default function ChatPage(): ReactElement {
         </ChatMarkdown>
       </Box>
 
-      <Stack sx={{ my: 2 }} spacing={2}>
-        {chat.messages.map((message, i) => (
-          <React.Fragment key={chat.id + i}>
-            <ChatBalloon message={message} onDelete={() => {}} />
-          </React.Fragment>
-        ))}
-        {completing && (
-          <React.Fragment>
-            <LoadingChatBalloon />
-          </React.Fragment>
-        )}
-      </Stack>
+      <Messages messages={chat.messages} completing={completing} messageHistoryLimit={chat.messageHistoryLimit} />
 
       <TextField
         sx={{ mt: 2 }}

@@ -16,7 +16,7 @@ export default function CustomizationStartPage(): ReactElement {
       userPromptTemplate: params.userPromptTemplate,
       temperature: params.temperature,
       maxResponseTokens: params.maxResponseTokens,
-      maxHistoryChats: params.maxHistoryChats,
+      messageHistoryLimit: params.messageHistoryLimit,
     });
     navigate(`/chats/${id}`);
   };
@@ -37,7 +37,7 @@ export default function CustomizationStartPage(): ReactElement {
         deployment={DefaultDeployment}
         temperature={0.5}
         maxResponseTokens={2048}
-        maxHistoryChats={20}
+        messageHistoryLimit={20}
         chatName="New Chat"
         systemPrompt="You are a helpful assistant."
         userPromptTemplate=""

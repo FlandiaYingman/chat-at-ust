@@ -25,7 +25,7 @@ export default function EditChatPage(): ReactElement {
       userPromptTemplate: params.userPromptTemplate,
       temperature: params.temperature,
       maxResponseTokens: params.maxResponseTokens,
-      maxHistoryChats: params.maxHistoryChats,
+      messageHistoryLimit: params.messageHistoryLimit,
     });
     navigate(`/chats/${id}`);
   };
@@ -46,7 +46,7 @@ export default function EditChatPage(): ReactElement {
         deployment={DeploymentMap[chat.deployment] ?? DefaultDeployment}
         temperature={chat.temperature}
         maxResponseTokens={chat.maxResponseTokens}
-        maxHistoryChats={chat.maxHistoryChats}
+        messageHistoryLimit={chat.messageHistoryLimit}
         chatName={chat.name}
         systemPrompt={chat.systemPrompt}
         userPromptTemplate={chat.userPromptTemplate}

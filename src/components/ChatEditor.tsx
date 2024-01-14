@@ -71,7 +71,7 @@ export type ChatParams = {
   deployment: Deployment;
   temperature: number;
   maxResponseTokens: number;
-  maxHistoryChats: number;
+  messageHistoryLimit: number;
   chatName: string;
   systemPrompt: string;
   userPromptTemplate: string;
@@ -87,7 +87,7 @@ export default function ChatEditor(props: Props) {
 
   const [temperature, setTemperature] = useState(props.temperature);
   const [maxResponseTokens, setMaxResponseTokens] = useState(props.maxResponseTokens);
-  const [maxHistoryChats, setMaxHistoryChats] = useState(props.maxHistoryChats);
+  const [messageHistoryLimit, setMessageHistoryLimit] = useState(props.messageHistoryLimit);
 
   const [chatName, setChatName] = useState(props.chatName);
   const [systemPrompt, setSystemPrompt] = useState(props.systemPrompt);
@@ -145,12 +145,12 @@ export default function ChatEditor(props: Props) {
           }}
         />
         <FormSlider
-          value={maxHistoryChats}
-          onChange={setMaxHistoryChats}
+          value={messageHistoryLimit}
+          onChange={setMessageHistoryLimit}
           min={0}
           max={40}
           step={1}
-          label="Max History Chats"
+          label="Message History Limit"
           icon={<HistoryIcon />}
           sliderProps={{
             valueLabelDisplay: "auto",
@@ -209,7 +209,7 @@ export default function ChatEditor(props: Props) {
             userPromptTemplate,
             temperature,
             maxResponseTokens,
-            maxHistoryChats,
+            messageHistoryLimit,
           })
         }
       >

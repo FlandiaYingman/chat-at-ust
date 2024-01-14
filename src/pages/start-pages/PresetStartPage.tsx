@@ -31,7 +31,7 @@ function PresetCard({ preset }: { preset: Preset }): ReactElement {
       userPromptTemplate: preset.userPromptTemplate ?? "",
       temperature: 0.5,
       maxResponseTokens: 2048,
-      maxHistoryChats: 20,
+      messageHistoryLimit: 20,
     });
     navigate(`/chats/${id}`);
   };

@@ -33,7 +33,7 @@ type ChatParams = {
   deployment: string;
   temperature: number;
   maxResponseTokens: number;
-  maxHistoryChats: number;
+  messageHistoryLimit: number;
 };
 
 interface ChatState {

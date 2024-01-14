@@ -7,7 +7,7 @@ export interface ChatData {
   readonly deployment: string;
   readonly temperature: number;
   readonly maxResponseTokens: number;
-  readonly maxHistoryChats: number;
+  readonly messageHistoryLimit: number;
 
   readonly messages?: Message[];
   readonly createdAt?: Date;
@@ -23,7 +23,7 @@ export class Chat implements ChatData {
   readonly deployment: string;
   readonly temperature: number;
   readonly maxResponseTokens: number;
-  readonly maxHistoryChats: number;
+  readonly messageHistoryLimit: number;
 
   readonly messages: Message[];
   readonly createdAt: Date;
@@ -37,7 +37,7 @@ export class Chat implements ChatData {
     this.deployment = props.deployment;
     this.temperature = props.temperature;
     this.maxResponseTokens = props.maxResponseTokens;
-    this.maxHistoryChats = props.maxHistoryChats;
+    this.messageHistoryLimit = props.messageHistoryLimit;
 
     this.messages = props.messages ?? [];
     this.createdAt = props.createdAt ?? new Date();

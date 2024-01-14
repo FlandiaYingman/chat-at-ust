@@ -1,5 +1,5 @@
 import { type Chat, type MessageRole } from "./index";
-import { AzureKeyCredential, OpenAIClient } from "@azure/openai";
+import { AzureKeyCredential, ChatRequestMessage, OpenAIClient } from "@azure/openai";
 
 export async function completeChat(chat: Chat, azureApiKey: string, azureApiUrl: string): Promise<Chat> {
   const client = new OpenAIClient(azureApiUrl, new AzureKeyCredential(azureApiKey), {
@@ -7,13 +7,17 @@ export async function completeChat(chat: Chat, azureApiKey: string, azureApiUrl:
     apiVersion: "2023-05-15",
   });
 
+  const lastNMessages = -(chat.messageHistoryLimit * 2 + 1);
   const messages = [
-    { role: "system", content: chat.systemPrompt },
-    ...chat.messages.slice(-(chat.maxHistoryChats + 1)).map((message) => ({
+    {
+      role: "system",
+      content: chat.systemPrompt,
+    },
+    ...chat.messages.slice(lastNMessages).map((message) => ({
       role: message.role,
       content: message.content,
     })),
-  ];
+  ] as ChatRequestMessage[];
   const deployment = chat.deployment;
 
   console.log("Completing Messages", messages);

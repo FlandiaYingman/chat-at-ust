@@ -223,12 +223,15 @@ export default function ChatPage(): ReactElement {
   return (
     <Container maxWidth="md" sx={{ my: 8 }}>
       <Box sx={{ m: 2 }}>
-        <Typography variant="h3">
-          {chat.name}{" "}
+        <Box>
+          <Typography variant="h3" sx={{ display: "inline" }}>
+            {chat.name}{" "}
+          </Typography>
           <Typography variant="subtitle1" sx={{ display: "inline" }}>
             {chat.hashtag()}
           </Typography>
-        </Typography>
+        </Box>
+
 
         <Typography variant="overline" gutterBottom>
           {chat.deployment}

@@ -23,7 +23,7 @@ export default function SettingsDialog({ open, onClose }: { open: boolean; onClo
   const saveSettings = (): void => {
     settingsStore.setAzureApiKey(azureApiKey);
     settingsStore.setAzureApiUrl(azureApiUrl);
-    getBalance(settingsStore.azureApiKey, settingsStore.azureApiUrl).then((balance) => chatStore.setBalance(balance));
+    getBalance(azureApiKey, azureApiUrl).then((balance) => chatStore.setBalance(balance));
     onClose();
   };
 

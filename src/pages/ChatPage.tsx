@@ -231,7 +231,7 @@ export default function ChatPage(): ReactElement {
 
       <Stack sx={{ my: 2 }} spacing={2}>
         {chat.messages.map((message, i) => (
-          <React.Fragment key={i}>
+          <React.Fragment key={chat.id + i}>
             <ChatBalloon message={message} onDelete={() => {}} />
           </React.Fragment>
         ))}

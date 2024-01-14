@@ -1,5 +1,5 @@
 import { NewChatPanel } from "@/components/NewChat.tsx";
-import { Box, Container, Typography } from "@mui/material";
+import { Box, Container, Link, Typography } from "@mui/material";
 import { type ReactElement } from "react";
 
 function Spacer(props: { spacing?: number }): ReactElement {
@@ -23,15 +23,15 @@ function HomePage(): ReactElement {
       </Typography>
       <Typography gutterBottom>
         In order to access the HKUST ChatGPT API, a key is required. Obtain your API key from the{" "}
-        <a href={HKUST_API_DEVELOPER_PORTAL}>HKUST API Developer Portal</a>. You may follow{" "}
-        <a href={HKUST_API_KEY_GUIDE}>this instruction</a> to obtain your API key. Enter your API key in <i>Settings</i>{" "}
-        (at bottom right corner of the page).
+        <Link href={HKUST_API_DEVELOPER_PORTAL}>HKUST API Developer Portal</Link>. You may follow{" "}
+        <Link href={HKUST_API_KEY_GUIDE}>this instruction</Link> to obtain your API key. Enter your API key in{" "}
+        <i>Settings</i> (at bottom right corner of the page).
       </Typography>
 
       <Typography variant="h4" gutterBottom>
         Quick Start
       </Typography>
-      <Typography component='div' gutterBottom>
+      <Typography component="div" gutterBottom>
         <NewChatPanel />
       </Typography>
       <Spacer />
@@ -41,7 +41,7 @@ function HomePage(): ReactElement {
       </Typography>
       <Typography gutterBottom>
         ChatGPT @ HKUST (the website) is an improved version of the{" "}
-        <a href="https://chatgpt.ust.hk">HKUST ChatGPT Platform</a>.
+        <Link href="https://chatgpt.ust.hk">HKUST ChatGPT Platform</Link>.
       </Typography>
       <Typography gutterBottom>
         The website is an independent and unofficial website authored by its students. It is not affiliated with or

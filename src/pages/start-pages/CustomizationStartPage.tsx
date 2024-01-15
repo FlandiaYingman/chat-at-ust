@@ -1,5 +1,6 @@
-import ChatEditor, { ChatParams } from "@/components/ChatEditor.tsx";
-import { DefaultDeployment } from "@/deployments";
+import { ChatParams } from "@/chats";
+import ChatEditor from "@/components/ChatEditor.tsx";
+import { DefaultDeploymentName } from "@/deployments";
 import { useChatStore } from "@/stores";
 import { Container, Link, Typography } from "@mui/material";
 import { type ReactElement } from "react";
@@ -9,15 +10,7 @@ export default function CustomizationStartPage(): ReactElement {
   const navigate = useNavigate();
   const chatStore = useChatStore();
   const createChat = (params: ChatParams): void => {
-    const id = chatStore.newChat({
-      name: params.chatName,
-      deployment: params.deployment.deployment,
-      systemPrompt: params.systemPrompt,
-      userPromptTemplate: params.userPromptTemplate,
-      temperature: params.temperature,
-      maxResponseTokens: params.maxResponseTokens,
-      messageHistoryLimit: params.messageHistoryLimit,
-    });
+    const id = chatStore.newChat(params);
     navigate(`/chats/${id}`);
   };
 
@@ -34,13 +27,13 @@ export default function CustomizationStartPage(): ReactElement {
         to learn more.
       </Typography>
       <ChatEditor
-        deployment={DefaultDeployment}
+        deployment={DefaultDeploymentName}
         temperature={0.5}
-        maxResponseTokens={2048}
-        messageHistoryLimit={20}
-        chatName="New Chat"
+        maxTokens={2048}
+        maxMessages={20}
+        name="New Chat"
         systemPrompt="You are a helpful assistant."
-        userPromptTemplate=""
+        userTemplatePrompt=""
         onSubmit={createChat}
       />
     </Container>

@@ -5,7 +5,7 @@
     problem, demonstrating various techniques with visuals or suggesting online resources for further study. I may write
     the math stuff in dollar signs, like $E=mc^2$, so that they will be rendered as LaTeX; you have to write the math
     stuff in dollar signs too.
-  userPromptTemplate: |-
+  userTemplatePrompt: |-
     How to solve the equation $x^2 + 2x + 1 = 0$?
 - name: Email Writer
   systemPrompt: >-
@@ -15,7 +15,7 @@
     generate a subject line based on the generated email content. I may use some other languages to describe the email,
     but please generate the email in English. Please do not provide any additional advice or information outside of the
     drafted email content.
-  userPromptTemplate: |-
+  userTemplatePrompt: |-
     - Recipient: the Professor
     - Purpose: Ask for an extension on an assignment
     - Main points: I have been sick and unable to complete the assignment on time. 

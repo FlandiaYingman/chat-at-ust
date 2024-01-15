@@ -5,7 +5,7 @@ import Fuse from "fuse.js";
 export type Preset = {
   name: string;
   systemPrompt: string;
-  userPromptTemplate?: string;
+  userTemplatePrompt?: string;
 };
 
 export const presetsChatAtHKUST = promptsChatAtUST as Preset[];
@@ -19,7 +19,7 @@ export function filterPresets(presets: Preset[], pattern: string): Preset[] {
   if (pattern === "") return presets;
   const fuse = new Fuse(presets, {
     ignoreLocation: true,
-    keys: ["name", "systemPrompt", "userPromptTemplate"],
+    keys: ["name", "systemPrompt", "userTemplatePrompt"],
   });
   return fuse.search(pattern).map((result) => result.item);
 }

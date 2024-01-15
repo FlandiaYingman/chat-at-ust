@@ -27,10 +27,10 @@ function PresetCard({ preset }: { preset: Preset }): ReactElement {
       name: preset.name,
       deployment: "gpt-4",
       systemPrompt: preset.systemPrompt,
-      userPromptTemplate: preset.userPromptTemplate ?? "",
+      userTemplatePrompt: preset.userTemplatePrompt ?? "",
       temperature: 0.5,
-      maxResponseTokens: 2048,
-      messageHistoryLimit: 20,
+      maxTokens: 2048,
+      maxMessages: 20,
     });
     navigate(`/chats/${id}`);
   };

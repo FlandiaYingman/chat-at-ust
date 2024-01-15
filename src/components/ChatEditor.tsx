@@ -1,4 +1,5 @@
-import { DefaultDeployment, Deployment, DeploymentMap, DeploymentNames } from "@/deployments";
+import { ChatParams } from "@/chats";
+import { DefaultDeployment, DeploymentMap, DeploymentNames } from "@/deployments";
 import { useTokenizer } from "@/deployments/tokenizer.ts";
 import { formatUSD } from "@/utils/currency.ts";
 import AbcIcon from "@mui/icons-material/Abc";
@@ -67,37 +68,22 @@ function FormSlider(props: {
   );
 }
 
-export type ChatParams = {
-  deployment: Deployment;
-  temperature: number;
-  maxResponseTokens: number;
-  messageHistoryLimit: number;
-  chatName: string;
-  systemPrompt: string;
-  userPromptTemplate: string;
-};
-
-export type Props = ChatParams & {
-  onSubmit: (params: ChatParams) => void;
-};
+export type Props = { onSubmit: (params: ChatParams) => void } & ChatParams;
 
 export default function ChatEditor(props: Props) {
-  const [deploymentName, setDeploymentName] = useState(props.deployment.deployment);
-  const deployment = DeploymentMap[deploymentName] ?? DefaultDeployment;
+  const [deployment, setDeployment] = useState(props.deployment);
+  const deploymentObj = DeploymentMap[deployment] ?? DefaultDeployment;
 
   const [temperature, setTemperature] = useState(props.temperature);
-  const [maxResponseTokens, setMaxResponseTokens] = useState(props.maxResponseTokens);
-  const [messageHistoryLimit, setMessageHistoryLimit] = useState(props.messageHistoryLimit);
+  const [maxTokens, setMaxTokens] = useState(props.maxTokens);
+  const [maxMessages, setMaxMessages] = useState(props.maxMessages);
 
-  const [chatName, setChatName] = useState(props.chatName);
+  const [name, setName] = useState(props.name);
   const [systemPrompt, setSystemPrompt] = useState(props.systemPrompt);
-  const [userPromptTemplate, setUserPromptTemplate] = useState(props.userPromptTemplate);
+  const [userTemplatePrompt, setUserTemplatePrompt] = useState(props.userTemplatePrompt);
 
-  const { tokens: systemPromptTokens, price: systemPromptPrice } = useTokenizer(deployment, systemPrompt);
-  const { tokens: userPromptTemplateTokens, price: userPromptTemplatePrice } = useTokenizer(
-    deployment,
-    userPromptTemplate,
-  );
+  const { tokens: systemTokens, price: systemPrice } = useTokenizer(deploymentObj, systemPrompt);
+  const { tokens: userTemplateTokens, price: userTemplatePrice } = useTokenizer(deploymentObj, userTemplatePrompt);
 
   return (
     <>
@@ -105,10 +91,8 @@ export default function ChatEditor(props: Props) {
         <Autocomplete
           renderInput={(params) => <TextField {...params} label="Model" />}
           options={DeploymentNames}
-          value={deploymentName}
-          onChange={(_e, v) => {
-            setDeploymentName(v);
-          }}
+          value={deployment}
+          onChange={(_e, v) => setDeployment(v)}
           disableClearable
         />
         <FormSlider
@@ -129,28 +113,28 @@ export default function ChatEditor(props: Props) {
           }}
         />
         <FormSlider
-          value={maxResponseTokens}
-          onChange={setMaxResponseTokens}
+          value={maxTokens}
+          onChange={setMaxTokens}
           min={0}
-          max={deployment.maxTokens}
+          max={deploymentObj.maxTokens}
           step={256}
-          label="Max Response Tokens"
+          label="Max Tokens"
           icon={<AbcIcon />}
           sliderProps={{
             valueLabelDisplay: "auto",
             marks: [
               { value: 0, label: "0" },
-              { value: deployment.maxTokens, label: `${deployment.maxTokens}` },
+              { value: deploymentObj.maxTokens, label: `${deploymentObj.maxTokens}` },
             ],
           }}
         />
         <FormSlider
-          value={messageHistoryLimit}
-          onChange={setMessageHistoryLimit}
+          value={maxMessages}
+          onChange={setMaxMessages}
           min={0}
           max={40}
           step={1}
-          label="Message History Limit"
+          label="Max Messages"
           icon={<HistoryIcon />}
           sliderProps={{
             valueLabelDisplay: "auto",
@@ -160,14 +144,7 @@ export default function ChatEditor(props: Props) {
             ],
           }}
         />
-        <TextField
-          label="Chat Name"
-          fullWidth
-          value={chatName}
-          onChange={(e) => {
-            setChatName(e.target.value);
-          }}
-        />
+        <TextField label="Chat Name" fullWidth value={name} onChange={(e) => setName(e.target.value)} />
         <TextField
           label="System Prompt"
           fullWidth
@@ -180,22 +157,22 @@ export default function ChatEditor(props: Props) {
           }}
         />
         <Typography variant="caption">
-          You have entered {systemPrompt.length} characters for system prompt, which is approximately{" "}
-          {systemPromptTokens} tokens and costs {formatUSD(systemPromptPrice)}.
+          You have entered {systemPrompt.length} characters for system prompt, which is approximately {systemTokens}{" "}
+          tokens and costs {formatUSD(systemPrice)}.
         </Typography>
         <TextField
-          label="User Prompt Template"
+          label="User Template Prompt"
           fullWidth
           multiline
           rows={4}
-          value={userPromptTemplate}
+          value={userTemplatePrompt}
           onChange={(e) => {
-            setUserPromptTemplate(e.target.value);
+            setUserTemplatePrompt(e.target.value);
           }}
         />
         <Typography variant="caption">
-          You have entered {userPromptTemplate.length} characters for user prompt template, which is approximately{" "}
-          {userPromptTemplateTokens} tokens and costs {formatUSD(userPromptTemplatePrice)}.
+          You have entered {userTemplatePrompt.length} characters for user prompt template, which is approximately{" "}
+          {userTemplateTokens} tokens and costs {formatUSD(userTemplatePrice)}.
         </Typography>
       </Stack>
       <Button
@@ -203,13 +180,13 @@ export default function ChatEditor(props: Props) {
         endIcon={<SendIcon />}
         onClick={() =>
           props.onSubmit({
-            chatName,
+            name,
             deployment,
             systemPrompt,
-            userPromptTemplate,
+            userTemplatePrompt,
             temperature,
-            maxResponseTokens,
-            messageHistoryLimit,
+            maxTokens,
+            maxMessages,
           })
         }
       >

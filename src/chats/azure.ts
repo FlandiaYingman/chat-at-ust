@@ -7,7 +7,7 @@ export async function completeChat(chat: Chat, azureApiKey: string, azureApiUrl:
     apiVersion: "2023-05-15",
   });
 
-  const lastNMessages = -(chat.messageHistoryLimit * 2 + 1);
+  const lastNMessages = -(chat.maxMessages * 2 + 1);
   const messages = [
     {
       role: "system",
@@ -23,7 +23,7 @@ export async function completeChat(chat: Chat, azureApiKey: string, azureApiUrl:
   console.log("Completing Messages", messages);
   return await client
     .getChatCompletions(deployment, messages, {
-      maxTokens: chat.maxResponseTokens,
+      maxTokens: chat.maxTokens,
       temperature: chat.temperature,
       n: 1,
     })

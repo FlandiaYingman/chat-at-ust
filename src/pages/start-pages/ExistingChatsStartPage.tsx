@@ -25,10 +25,10 @@ function ExistingChatCard({ chat }: { chat: Chat }): ReactElement {
       name: chat.name,
       deployment: chat.deployment,
       systemPrompt: chat.systemPrompt,
-      userPromptTemplate: chat.userPromptTemplate,
+      userTemplatePrompt: chat.userTemplatePrompt,
       temperature: chat.temperature,
-      maxResponseTokens: chat.maxResponseTokens,
-      messageHistoryLimit: chat.messageHistoryLimit,
+      maxTokens: chat.maxTokens,
+      maxMessages: chat.maxMessages,
     });
     navigate(`/chats/${id}`);
   };

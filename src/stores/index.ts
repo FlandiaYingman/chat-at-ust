@@ -1,4 +1,4 @@
-import { Chat, ChatData, compareChat } from "@/chats";
+import { Chat, ChatData, ChatParams, compareChat } from "@/chats";
 import superjson from "superjson";
 import { v1 } from "uuid";
 import { create } from "zustand";
@@ -26,15 +26,6 @@ const useSettingsStore = create(
   ),
 );
 
-type ChatParams = {
-  name: string;
-  systemPrompt: string;
-  userPromptTemplate: string;
-  deployment: string;
-  temperature: number;
-  maxResponseTokens: number;
-  messageHistoryLimit: number;
-};
 
 interface ChatState {
   data: Record<string, ChatData>;

@@ -1,29 +1,32 @@
-export interface ChatData {
-  readonly id: string;
+export interface ChatParams {
   readonly name: string;
   readonly systemPrompt: string;
-  readonly userPromptTemplate: string;
+  readonly userTemplatePrompt: string;
 
   readonly deployment: string;
   readonly temperature: number;
-  readonly maxResponseTokens: number;
-  readonly messageHistoryLimit: number;
+  readonly maxTokens: number;
+  readonly maxMessages: number;
 
   readonly messages?: Message[];
   readonly createdAt?: Date;
   readonly updatedAt?: Date;
 }
 
+export interface ChatData extends ChatParams {
+  readonly id: string;
+}
+
 export class Chat implements ChatData {
   readonly id: string;
   readonly name: string;
   readonly systemPrompt: string;
-  readonly userPromptTemplate: string;
+  readonly userTemplatePrompt: string;
 
   readonly deployment: string;
   readonly temperature: number;
-  readonly maxResponseTokens: number;
-  readonly messageHistoryLimit: number;
+  readonly maxTokens: number;
+  readonly maxMessages: number;
 
   readonly messages: Message[];
   readonly createdAt: Date;
@@ -33,11 +36,12 @@ export class Chat implements ChatData {
     this.id = props.id;
     this.name = props.name;
     this.systemPrompt = props.systemPrompt;
-    this.userPromptTemplate = props.userPromptTemplate;
+    this.userTemplatePrompt = props.userTemplatePrompt;
+
     this.deployment = props.deployment;
     this.temperature = props.temperature;
-    this.maxResponseTokens = props.maxResponseTokens;
-    this.messageHistoryLimit = props.messageHistoryLimit;
+    this.maxTokens = props.maxTokens;
+    this.maxMessages = props.maxMessages;
 
     this.messages = props.messages ?? [];
     this.createdAt = props.createdAt ?? new Date();

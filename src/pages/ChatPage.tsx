@@ -158,7 +158,7 @@ function Messages(props: { messages: Message[]; messageHistoryLimit: number; com
           </Collapse>
           <Divider onClick={() => setShowHistory(!showHistory)} sx={{ cursor: "pointer" }}>
             <Typography variant="caption" color="text.secondary">
-              Message History Limit (={messageHistoryLimit}) Exceeded. Earlier Messages will be Hidden.{" "}
+              Max Messages (={messageHistoryLimit}) Exceeded: Earlier Messages will be Hidden.{" "}
               {showHistory ? (
                 <Visibility fontSize="small" sx={{ mb: -0.5 }} />
               ) : (
@@ -232,7 +232,6 @@ export default function ChatPage(): ReactElement {
           </Typography>
         </Box>
 
-
         <Typography variant="overline" gutterBottom>
           {chat.deployment}
         </Typography>
@@ -241,13 +240,13 @@ export default function ChatPage(): ReactElement {
         </ChatMarkdown>
       </Box>
 
-      <Messages messages={chat.messages} completing={completing} messageHistoryLimit={chat.messageHistoryLimit} />
+      <Messages messages={chat.messages} completing={completing} messageHistoryLimit={chat.maxMessages} />
 
       <TextField
         sx={{ mt: 2 }}
         autoFocus
         label="User's Prompt"
-        placeholder={chat.userPromptTemplate !== "" ? "[Tab] " + chat.userPromptTemplate : "What is HKUST? "}
+        placeholder={chat.userTemplatePrompt !== "" ? "[Tab] " + chat.userTemplatePrompt : "What is HKUST? "}
         fullWidth
         multiline
         rows={8}
@@ -258,7 +257,7 @@ export default function ChatPage(): ReactElement {
         onKeyDown={(e) => {
           if (e.key === "Tab" && prompt === "") {
             e.preventDefault();
-            setPrompt(chat.userPromptTemplate);
+            setPrompt(chat.userTemplatePrompt);
           }
           if (e.ctrlKey && e.key === "Enter") {
             e.preventDefault();

@@ -37,3 +37,4 @@ export const DeploymentMap: Record<string, Deployment> = Deployments.reduce((map
 }, {});
 
 export const DefaultDeployment: Deployment = DeploymentMap["gpt-4"];
+export const DefaultDeploymentName: string = DefaultDeployment.deployment;

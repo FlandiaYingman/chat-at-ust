@@ -1,5 +1,5 @@
-import ChatEditor, { ChatParams } from "@/components/ChatEditor.tsx";
-import { DefaultDeployment, DeploymentMap } from "@/deployments";
+import { ChatParams } from "@/chats";
+import ChatEditor from "@/components/ChatEditor.tsx";
 import { useChatStore } from "@/stores";
 import { Container, Link, Typography } from "@mui/material";
 import { ReactElement } from "react";
@@ -19,13 +19,7 @@ export default function EditChatPage(): ReactElement {
   const editChat = (params: ChatParams): void => {
     chatStore.setChat({
       ...chat,
-      name: params.chatName,
-      deployment: params.deployment.deployment,
-      systemPrompt: params.systemPrompt,
-      userPromptTemplate: params.userPromptTemplate,
-      temperature: params.temperature,
-      maxResponseTokens: params.maxResponseTokens,
-      messageHistoryLimit: params.messageHistoryLimit,
+      ...params,
     });
     navigate(`/chats/${id}`);
   };
@@ -43,13 +37,13 @@ export default function EditChatPage(): ReactElement {
         to learn more.
       </Typography>
       <ChatEditor
-        deployment={DeploymentMap[chat.deployment] ?? DefaultDeployment}
+        name={chat.name}
+        deployment={chat.deployment}
         temperature={chat.temperature}
-        maxResponseTokens={chat.maxResponseTokens}
-        messageHistoryLimit={chat.messageHistoryLimit}
-        chatName={chat.name}
+        maxTokens={chat.maxTokens}
+        maxMessages={chat.maxMessages}
         systemPrompt={chat.systemPrompt}
-        userPromptTemplate={chat.userPromptTemplate}
+        userTemplatePrompt={chat.userTemplatePrompt}
         onSubmit={editChat}
       />
     </Container>

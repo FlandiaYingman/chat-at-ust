@@ -1,6 +1,6 @@
+import { FileUpload } from "@mui/icons-material";
 import CreateIcon from "@mui/icons-material/Create";
 import ImportContactsIcon from "@mui/icons-material/ImportContacts";
-import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import {
   Card,
   CardActionArea,
@@ -43,10 +43,10 @@ export function NewChatPanel({ callback = () => {} }: { callback?: () => void })
           <CardActionArea onClick={() => action("/new-chat/existing-chats")}>
             <CardContent>
               <Stack alignItems="center" spacing={1}>
-                <QuestionAnswerIcon />
-                <Typography variant="h5">Existing Chats</Typography>
+                <FileUpload />
+                <Typography variant="h5">Import</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Create a new chat from one of the existing chats.
+                  Create a new chat from previously exported chats.
                 </Typography>
               </Stack>
             </CardContent>

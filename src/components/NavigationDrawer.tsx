@@ -1,10 +1,10 @@
 import type { Chat } from "@/chats";
-import ConfirmDialog from "@/components/ConfirmDialog.tsx";
+import { ConfirmDialog } from "@/components/ConfirmDialog.tsx";
 import Logo from "@/components/Logo.tsx";
 import { NewChatDialog } from "@/components/NewChat.tsx";
 import { useChatStore } from "@/stores";
 import { formatHKD } from "@/utils/currency.ts";
-import { ContentCopyOutlined, FileCopyOutlined } from "@mui/icons-material";
+import { ContentCopyOutlined, FileCopyOutlined, FileDownload } from "@mui/icons-material";
 import ChatIcon from "@mui/icons-material/Chat";
 import CreditScoreIcon from "@mui/icons-material/CreditScore";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -28,6 +28,7 @@ import {
 } from "@mui/material";
 import { ReactElement, useRef, useState } from "react";
 import { useNavigate } from "react-router";
+import superjson from "superjson";
 
 function ChatListItem(props: { chat: Chat }): ReactElement {
   const { chat } = props;
@@ -58,6 +59,17 @@ function ChatListItem(props: { chat: Chat }): ReactElement {
   const duplicateChatWithoutMessages = () => {
     const id = chatStore.newChat({ ...chat, messages: undefined, createdAt: undefined, updatedAt: undefined });
     navigate(`/chats/${id}/edit`);
+  };
+
+  const exportChat = () => {
+    const json = superjson.stringify({ ...chat });
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${chat.name}${chat.hashtag()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -111,6 +123,17 @@ function ChatListItem(props: { chat: Chat }): ReactElement {
         <MenuItem
           onClick={() => {
             handleMenuClose();
+            exportChat();
+          }}
+        >
+          <ListItemIcon>
+            <FileDownload />
+          </ListItemIcon>
+          <ListItemText>Export Chat</ListItemText>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleMenuClose();
             navigate(`/chats/${props.chat.id}/edit`);
           }}
         >
@@ -131,13 +154,14 @@ function ChatListItem(props: { chat: Chat }): ReactElement {
           <ListItemText>Delete Chat</ListItemText>
         </MenuItem>
       </Menu>
-      <ConfirmDialog
-        open={deleteDialogOpen}
-        setOpen={setDeleteDialogOpen}
-        title={`Are you sure you want to delete this chat? `}
-        text={`"${props.chat.name}${props.chat.hashtag()}" will be lost forever (a long time)... `}
-        onConfirmed={deleteChat}
-      />
+      {deleteDialogOpen && (
+        <ConfirmDialog title="Delete this Chat? " onConfirmed={deleteChat}>
+          <b>
+            ${props.chat.name}${props.chat.hashtag()}
+          </b>{" "}
+          will be lost forever (a long time)...
+        </ConfirmDialog>
+      )}
     </ListItem>
   );
 }

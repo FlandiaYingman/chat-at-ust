@@ -4,7 +4,7 @@ import HomePage from "../pages/HomePage";
 import CustomizationStartPage from "../pages/start-pages/CustomizationStartPage.tsx";
 import PresetStartPage from "../pages/start-pages/PresetStartPage.tsx";
 import EditChatPage from "@/pages/EditChatPage.tsx";
-import ExistingChatsStartPage from "@/pages/start-pages/ExistingChatsStartPage.tsx";
+import ImportStartPage from "@/pages/start-pages/ImportStartPage.tsx";
 import { createBrowserRouter, ScrollRestoration } from "react-router-dom";
 
 const router = createBrowserRouter([
@@ -22,7 +22,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/new-chat/existing-chats",
-        element: <ExistingChatsStartPage />,
+        element: <ImportStartPage />,
       },
       {
         path: "/new-chat/customization",

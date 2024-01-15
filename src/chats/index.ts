@@ -73,6 +73,10 @@ export class Chat implements ChatData {
     // hash >>> 0: convert to unsigned integer
     return "#" + ((hash >>> 0) % 10000).toString().padStart(4, "0");
   }
+
+  fullName(): string {
+    return `${this.name}${this.hashtag()}`
+  }
 }
 
 export function compareChat(a: Chat, b: Chat): number {

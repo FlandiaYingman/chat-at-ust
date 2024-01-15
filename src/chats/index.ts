@@ -48,15 +48,18 @@ export class Chat implements ChatData {
     this.updatedAt = props.updatedAt ?? new Date();
   }
 
-  newMessage(role: MessageRole, content: string): Chat {
-    const message: Message = {
-      role,
-      content,
-    };
+  newMessage(role: MessageRole, content: string, error?: true): Chat {
+    const message = { role, content };
+    const messages = [...this.messages, message];
+
+    if (error) {
+      messages[messages.length - 1] = { ...messages[messages.length - 1], error: true };
+      messages[messages.length - 2] = { ...messages[messages.length - 2], error: true };
+    }
 
     return new Chat({
       ...this,
-      messages: [...this.messages, message],
+      messages: messages,
       updatedAt: new Date(),
     });
   }
@@ -75,7 +78,7 @@ export class Chat implements ChatData {
   }
 
   fullName(): string {
-    return `${this.name}${this.hashtag()}`
+    return `${this.name}${this.hashtag()}`;
   }
 }
 
@@ -83,9 +86,10 @@ export function compareChat(a: Chat, b: Chat): number {
   return -(a.updatedAt.valueOf() - b.updatedAt.valueOf());
 }
 
-export type MessageRole = "system" | "user" | "assistant" | "error";
+export type MessageRole = "system" | "user" | "assistant";
 
 export interface Message {
   readonly role: MessageRole;
   readonly content: string;
+  readonly error?: true;
 }

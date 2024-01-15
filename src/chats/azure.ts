@@ -1,4 +1,4 @@
-import { type Chat, type MessageRole } from "./index";
+import { type Chat } from "./index";
 import { AzureKeyCredential, ChatRequestMessage, OpenAIClient } from "@azure/openai";
 
 export async function completeChat(chat: Chat, azureApiKey: string, azureApiUrl: string): Promise<Chat> {
@@ -13,10 +13,13 @@ export async function completeChat(chat: Chat, azureApiKey: string, azureApiUrl:
       role: "system",
       content: chat.systemPrompt,
     },
-    ...chat.messages.slice(lastNMessages).map((message) => ({
-      role: message.role,
-      content: message.content,
-    })),
+    ...chat.messages
+      .filter((message) => !message.error)
+      .slice(lastNMessages)
+      .map((message) => ({
+        role: message.role,
+        content: message.content,
+      })),
   ] as ChatRequestMessage[];
   const deployment = chat.deployment;
 
@@ -31,17 +34,17 @@ export async function completeChat(chat: Chat, azureApiKey: string, azureApiUrl:
       (completions) => {
         const message = completions.choices[0].message;
         if (message != null) {
-          return chat.newMessage(message.role as MessageRole, message.content ?? "");
+          return chat.newMessage("assistant", message.content ?? "");
         } else {
           console.log(completions);
           console.log(chat);
-          return chat.newMessage("error", JSON.stringify(completions));
+          return chat.newMessage("assistant", JSON.stringify(completions), true);
         }
       },
       (error) => {
         console.log(error);
         console.log(chat);
-        return chat.newMessage("error", error.message);
+        return chat.newMessage("assistant", error.message, true );
       },
     );
 }

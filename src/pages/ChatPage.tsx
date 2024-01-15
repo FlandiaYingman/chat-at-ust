@@ -57,7 +57,7 @@ function Message(props: { message?: Message; history?: boolean; completing?: boo
         </Typography>
       );
     }
-    if (message.role === "error") {
+    if (message.error && message.role === "assistant") {
       return (
         <ChatMarkdown variant="body2" color="text.secondary" fontStyle="italic">
           {message.content}
@@ -85,7 +85,7 @@ function Message(props: { message?: Message; history?: boolean; completing?: boo
             sx={{
               width: "1.75em",
               height: "1.75em",
-              bgcolor: message.role !== "error" ? theme.palette.primary.main : theme.palette.error.main,
+              bgcolor: !message.error ? theme.palette.primary.main : theme.palette.error.main,
             }}
             onClick={() => setMenuOpen(!menuOpen)}
           >
@@ -94,7 +94,6 @@ function Message(props: { message?: Message; history?: boolean; completing?: boo
                 case "user":
                   return <PersonIcon />;
                 case "assistant":
-                case "error":
                   return <AssistantIcon />;
               }
             })()}
@@ -135,30 +134,49 @@ function Message(props: { message?: Message; history?: boolean; completing?: boo
   );
 }
 
-function Messages(props: { messages: Message[]; messageHistoryLimit: number; completing: boolean }): ReactElement {
-  const { completing, messageHistoryLimit } = props;
-  const messages = props.messages.map((m) => ({ ...m, id: v4() }));
+function Messages(props: { messages: Message[]; maxMessages: number; completing: boolean }): ReactElement {
+  const { completing, maxMessages } = props;
 
-  const historyMessages = messages.slice(0, -messageHistoryLimit * 2);
-  const activeMessages = messages.slice(-messageHistoryLimit * 2);
+  function splitMessages<T>(messages: (Message & T)[]): { hMessages: (Message & T)[]; messages: (Message & T)[] } {
+    if (maxMessages === 0) return { hMessages: messages, messages: [] };
+    for (let count = 0, i = messages.length - 1; i >= 0; i--) {
+      if (!messages[i].error) count++;
+      if (count === maxMessages * 2) {
+        // If it is completing, leave space for the skeleton message.
+        if (completing) {
+          i = i + 1;
+        }
+        return { hMessages: messages.slice(0, i), messages: messages.slice(i) };
+      }
+    }
+    return { hMessages: [], messages };
+  }
 
+  const { hMessages, messages } = splitMessages(props.messages.map((m) => ({ ...m, id: v4() })));
+  const { hidden, history } =
+    hMessages.length <= 2
+      ? { hidden: [], history: hMessages }
+      : { hidden: hMessages.slice(0, -2), history: hMessages.slice(-2) };
   const [showHistory, setShowHistory] = useState(false);
 
   return (
     <Stack sx={{ my: 2 }} spacing={2}>
       {/* History Messages */}
-      {historyMessages.length > 0 && (
+      {hMessages.length > 0 && (
         <>
           <Collapse in={showHistory}>
             <Stack spacing={2}>
-              {historyMessages.map((m) => (
+              {hidden.map((m) => (
                 <Message key={m.id} message={m} history />
               ))}
             </Stack>
           </Collapse>
+          {history.map((m) => (
+            <Message key={m.id} message={m} history />
+          ))}
           <Divider onClick={() => setShowHistory(!showHistory)} sx={{ cursor: "pointer" }}>
             <Typography variant="caption" color="text.secondary">
-              Max Messages (={messageHistoryLimit}) Exceeded: Earlier Messages will be Hidden.{" "}
+              Max Messages (={maxMessages}) Exceeded: Earlier Messages will be Hidden.{" "}
               {showHistory ? (
                 <Visibility fontSize="small" sx={{ mb: -0.5 }} />
               ) : (
@@ -170,7 +188,7 @@ function Messages(props: { messages: Message[]; messageHistoryLimit: number; com
       )}
 
       {/* Active Messages */}
-      {activeMessages.map((m) => (
+      {messages.map((m) => (
         <Message message={m} key={m.id} />
       ))}
 
@@ -187,18 +205,16 @@ export default function ChatPage(): ReactElement {
   const settingsStore = useSettingsStore();
   const chatStore = useChatStore();
   const chat = chatStore.chat(id ?? "");
-  const [prompt, setPrompt] = React.useState("");
-
-  const [completing, setCompleting] = React.useState(false);
 
   if (chat == null) {
     return <></>;
   }
 
+  const [prompt, setPrompt] = React.useState("");
+  const [completing, setCompleting] = React.useState(false);
+
   const refreshBalance = () => {
-    getBalance(settingsStore.azureApiKey, settingsStore.azureApiUrl).then((balance) => {
-      chatStore.setBalance(balance);
-    });
+    getBalance(settingsStore.azureApiKey, settingsStore.azureApiUrl).then((balance) => chatStore.setBalance(balance));
   };
 
   const complete = (): void => {
@@ -206,8 +222,8 @@ export default function ChatPage(): ReactElement {
     setCompleting(true);
 
     const newChat = chat.newMessage("user", prompt);
-
     chatStore.setChat(newChat);
+
     setPrompt("");
 
     completeChat(newChat, settingsStore.azureApiKey, settingsStore.azureApiUrl)
@@ -218,6 +234,7 @@ export default function ChatPage(): ReactElement {
       .then(() => setCompleting(false))
       .then(() => refreshBalance());
   };
+
   const { tokens, price } = useTokenizer(DeploymentMap[chat.deployment], prompt);
 
   return (
@@ -240,13 +257,13 @@ export default function ChatPage(): ReactElement {
         </ChatMarkdown>
       </Box>
 
-      <Messages messages={chat.messages} completing={completing} messageHistoryLimit={chat.maxMessages} />
+      <Messages messages={chat.messages} completing={completing} maxMessages={chat.maxMessages} />
 
       <TextField
         sx={{ mt: 2 }}
         autoFocus
-        label="User's Prompt"
-        placeholder={chat.userTemplatePrompt !== "" ? "[Tab] " + chat.userTemplatePrompt : "What is HKUST? "}
+        label="User Prompt"
+        placeholder={chat.userTemplatePrompt !== "" ? "[Tab] " + chat.userTemplatePrompt : ""}
         fullWidth
         multiline
         minRows={8}
@@ -269,8 +286,8 @@ export default function ChatPage(): ReactElement {
         You have entered {prompt.length} characters for system prompt, which is {tokens} tokens and costs&nbsp;
         {formatUSD(price)}.
       </Typography>
-      <Stack direction="row-reverse" sx={{ m: 2 }}>
-        <Tooltip title="Control+Enter" arrow>
+      <Stack direction="row-reverse">
+        <Tooltip title="Complete Chat (Control+Enter)" arrow>
           <Button variant="contained" size="large" color="secondary" onClick={complete} disabled={completing}>
             <SendIcon />
           </Button>

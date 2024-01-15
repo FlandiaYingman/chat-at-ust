@@ -149,7 +149,7 @@ export default function ChatEditor(props: Props) {
           label="System Prompt"
           fullWidth
           multiline
-          rows={8}
+          minRows={8}
           placeholder="You are a helpful assistant."
           value={systemPrompt}
           onChange={(e) => {
@@ -164,7 +164,7 @@ export default function ChatEditor(props: Props) {
           label="User Template Prompt"
           fullWidth
           multiline
-          rows={4}
+          minRows={4}
           value={userTemplatePrompt}
           onChange={(e) => {
             setUserTemplatePrompt(e.target.value);

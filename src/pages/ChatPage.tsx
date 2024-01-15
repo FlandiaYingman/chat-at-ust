@@ -249,7 +249,7 @@ export default function ChatPage(): ReactElement {
         placeholder={chat.userTemplatePrompt !== "" ? "[Tab] " + chat.userTemplatePrompt : "What is HKUST? "}
         fullWidth
         multiline
-        rows={8}
+        minRows={8}
         value={prompt}
         onChange={(e) => {
           setPrompt(e.target.value);

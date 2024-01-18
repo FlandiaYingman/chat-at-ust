@@ -14,6 +14,12 @@ function code(): (props: DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElem
   return (props) => {
     // eslint-disable-next-line react/prop-types
     const { children, className, ...rest } = props;
+    if (/language-math/.exec(className ?? "") != null)
+      return (
+        <code {...rest} className={className}>
+          {children}
+        </code>
+      );
     const match = /language-(\w+)/.exec(className ?? "");
     return match != null ? (
       <SyntaxHighlighter
@@ -21,7 +27,7 @@ function code(): (props: DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElem
         language={match[1]}
         style={github}
         customStyle={{ padding: 0, overflowX: "unset" }}
-        PreTag="div"
+        PreTag="pre"
         CodeTag="code"
       >
         {String(children).replace(/\n$/, "")}

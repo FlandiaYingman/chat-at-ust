@@ -25,5 +25,12 @@ pre > code {
 }
 
 .chat-markdown > :last-child {
-  margin-bottom: 0;
+  margin-bottom: 0 !important;
+}
+
+.katex-display {
+  margin: 0 !important;
+  margin-bottom: 0.35em !important;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
 }

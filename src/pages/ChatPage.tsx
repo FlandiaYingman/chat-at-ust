@@ -32,8 +32,9 @@ import {
   useTheme,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import React, { type ReactElement, useState } from "react";
+import React, { type ReactElement, useEffect, useState } from "react";
 import { useParams } from "react-router";
+import { unstable_usePrompt } from "react-router-dom";
 import { v4 } from "uuid";
 
 function Message(props: { message?: Message; history?: boolean; completing?: boolean }): ReactElement {
@@ -219,10 +220,26 @@ export default function ChatPage(): ReactElement {
         (chat) => chatStore.setChat(chat),
         (error) => console.error(error),
       )
-      .then(() => setCompleting(false))
+      .then(() => setCompleting(false));
   };
 
   const { tokens, price } = useTokenizer(DeploymentMap[chat.deployment], prompt);
+
+  // confirm if user wants to exit the webpage if completing
+  useEffect(() => {
+    if (completing) {
+      window.onbeforeunload = (e) => {
+        e.preventDefault();
+      };
+      return () => {
+        window.onbeforeunload = null;
+      };
+    }
+  }, [completing]);
+  unstable_usePrompt({
+    message: "The chat is not complete yet. Leave?",
+    when: ({ currentLocation, nextLocation }) => completing && currentLocation.pathname !== nextLocation.pathname,
+  });
 
   return (
     <Container maxWidth="md" sx={{ my: 8 }}>

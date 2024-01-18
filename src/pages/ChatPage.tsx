@@ -15,7 +15,23 @@ import AssistantIcon from "@mui/icons-material/Assistant";
 import PersonIcon from "@mui/icons-material/Person";
 import SendIcon from "@mui/icons-material/Send";
 import SubjectIcon from "@mui/icons-material/Subject";
-import { Avatar, Box, Button, Collapse, Container, Divider, IconButton, Paper, Skeleton, Stack, SvgIcon, TextField, Tooltip, Typography, useTheme } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  Collapse,
+  Container,
+  Divider,
+  IconButton,
+  Paper,
+  Skeleton,
+  Stack,
+  SvgIcon,
+  TextField,
+  Tooltip,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { grey } from "@mui/material/colors";
 import React, { type ReactElement, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -331,7 +347,7 @@ function ChatPageImpl({ id }: { id: string }): ReactElement {
 
   return (
     <Container maxWidth="md" sx={{ my: 8 }}>
-      <Box sx={{ mx: 2 }}>
+      <Box sx={{ mx: 2, mb: 1 }}>
         <Box>
           <Typography variant="h3" sx={{ display: "inline" }}>
             {chat.name}{" "}

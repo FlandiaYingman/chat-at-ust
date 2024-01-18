@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Tooltip } from "@mui/material";
 import React, { PropsWithChildren } from "react";
 
 
@@ -19,30 +19,40 @@ export function ConfirmDialog(props: ConfirmDialogProps): React.ReactElement {
         props.onClose?.();
         props.onCancelled?.();
       }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          props.onClose?.();
+          props.onConfirmed?.();
+        }
+      }}
     >
       <DialogTitle>{props.title}</DialogTitle>
       <DialogContent>
         <DialogContentText>{props.children}</DialogContentText>
       </DialogContent>
       <DialogActions sx={{ p: 2 }}>
-        <Button
-          onClick={() => {
-            props.onCancelled?.();
-          }}
-          variant="contained"
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={() => {
-            props.onClose?.();
-            props.onConfirmed?.();
-          }}
-          color="error"
-          variant="contained"
-        >
-          Confirm
-        </Button>
+        <Tooltip title="Esc">
+          <Button
+            onClick={() => {
+              props.onCancelled?.();
+            }}
+            variant="contained"
+          >
+            Cancel
+          </Button>
+        </Tooltip>
+        <Tooltip title="Enter">
+          <Button
+            onClick={() => {
+              props.onClose?.();
+              props.onConfirmed?.();
+            }}
+            color="error"
+            variant="contained"
+          >
+            Confirm
+          </Button>
+        </Tooltip>
       </DialogActions>
     </Dialog>
   );
@@ -65,19 +75,27 @@ export function AlertDialog(props: AlertDialogProps): React.ReactElement {
         props.onClose?.();
         props.onCancelled?.();
       }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          props.onClose?.();
+          props.onConfirmed?.();
+        }
+      }}
     >
       <DialogTitle>{props.title}</DialogTitle>
       <DialogContent>{props.children}</DialogContent>
       <DialogActions sx={{ p: 2 }}>
-        <Button
-          onClick={() => {
-            props.onClose?.();
-            props.onConfirmed?.();
-          }}
-          variant="contained"
-        >
-          OK
-        </Button>
+        <Tooltip title="Enter">
+          <Button
+            onClick={() => {
+              props.onClose?.();
+              props.onConfirmed?.();
+            }}
+            variant="contained"
+          >
+            OK
+          </Button>
+        </Tooltip>
       </DialogActions>
     </Dialog>
   );

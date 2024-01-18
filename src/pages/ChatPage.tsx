@@ -10,28 +10,20 @@ import { formatUSD } from "@/utils/currency.ts";
 import { isMarkdown } from "@/utils/markdown.ts";
 import { faMarkdown } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ContentCopyTwoTone, DeleteTwoTone, EditTwoTone, FileCopyTwoTone, FileDownloadTwoTone, Visibility, VisibilityOff } from "@mui/icons-material";
+import {
+  ContentCopyTwoTone,
+  DeleteTwoTone,
+  EditTwoTone,
+  FileCopyTwoTone,
+  FileDownloadTwoTone,
+  Visibility,
+  VisibilityOff,
+} from "@mui/icons-material";
 import AssistantIcon from "@mui/icons-material/Assistant";
 import PersonIcon from "@mui/icons-material/Person";
 import SendIcon from "@mui/icons-material/Send";
 import SubjectIcon from "@mui/icons-material/Subject";
-import {
-  Avatar,
-  Box,
-  Button,
-  Collapse,
-  Container,
-  Divider,
-  IconButton,
-  Paper,
-  Skeleton,
-  Stack,
-  SvgIcon,
-  TextField,
-  Tooltip,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Avatar, Box, Button, Collapse, Container, Divider, IconButton, Paper, Skeleton, Stack, SvgIcon, TextField, Tooltip, Typography, useTheme } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import React, { type ReactElement, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -132,6 +124,7 @@ function Message(props: { message?: Message; history?: boolean; completing?: boo
 
 function Messages(props: { messages: Message[]; maxMessages: number; completing: boolean }): ReactElement {
   const { completing, maxMessages } = props;
+  if (props.messages.length === 0 && !completing) return <></>;
 
   function splitMessages<T>(messages: (Message & T)[]): { hMessages: (Message & T)[]; messages: (Message & T)[] } {
     if (maxMessages === 0) return { hMessages: messages, messages: [] };
@@ -349,7 +342,7 @@ function ChatPageImpl({ id }: { id: string }): ReactElement {
 
   return (
     <Container maxWidth="md" sx={{ my: 8 }}>
-      <Box sx={{ m: 2 }}>
+      <Box sx={{ mx: 2 }}>
         <Box>
           <Typography variant="h3" sx={{ display: "inline" }}>
             {chat.name}{" "}
@@ -383,9 +376,7 @@ function ChatPageImpl({ id }: { id: string }): ReactElement {
         multiline
         minRows={8}
         value={prompt}
-        onChange={(e) => {
-          setPrompt(e.target.value);
-        }}
+        onChange={(e) => setPrompt(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Tab" && prompt === "") {
             e.preventDefault();

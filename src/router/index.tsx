@@ -5,14 +5,7 @@ import CustomizationStartPage from "../pages/start-pages/CustomizationStartPage.
 import PresetStartPage from "../pages/start-pages/PresetStartPage.tsx";
 import EditChatPage from "@/pages/EditChatPage.tsx";
 import ImportStartPage from "@/pages/start-pages/ImportStartPage.tsx";
-import { useParams } from "react-router";
 import { createBrowserRouter, ScrollRestoration } from "react-router-dom";
-
-
-const ChatPageWrapper = () => {
-  const { id } = useParams()
-  return <ChatPage key={id} />;
-};
 
 const router = createBrowserRouter([
   {
@@ -40,7 +33,7 @@ const router = createBrowserRouter([
         element: (
           <>
             <ScrollRestoration />
-            <ChatPageWrapper />
+            <ChatPage />
           </>
         ),
       },

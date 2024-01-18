@@ -193,11 +193,15 @@ function Messages(props: { messages: Message[]; maxMessages: number; completing:
 
 export default function ChatPage(): ReactElement {
   const params = useParams();
-  const id = params.id;
+  const id = params.id!;
 
+  return <ChatPageImpl id={id} key={id} />;
+}
+
+function ChatPageImpl({ id }: { id: string }): ReactElement {
   const settingsStore = useSettingsStore();
   const chatStore = useChatStore();
-  const chat = chatStore.chat(id ?? "");
+  const chat = chatStore.chat(id);
 
   if (chat == null) {
     return <></>;

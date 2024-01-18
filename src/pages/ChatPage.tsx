@@ -1,7 +1,8 @@
 import { completeChat } from "../chats/azure";
 import "./styles/ChatPage.css";
-import { type Message } from "@/chats";
+import { Chat, type Message } from "@/chats";
 import { ChatMarkdown } from "@/components/ChatMarkdown.tsx";
+import { ConfirmDialog } from "@/components/ConfirmDialog.tsx";
 import { DeploymentMap } from "@/deployments";
 import { useTokenizer } from "@/deployments/tokenizer.ts";
 import { useChatStore, useSettingsStore } from "@/stores";
@@ -9,7 +10,7 @@ import { formatUSD } from "@/utils/currency.ts";
 import { isMarkdown } from "@/utils/markdown.ts";
 import { faMarkdown } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { ContentCopyTwoTone, DeleteTwoTone, EditTwoTone, FileCopyTwoTone, FileDownloadTwoTone, Visibility, VisibilityOff } from "@mui/icons-material";
 import AssistantIcon from "@mui/icons-material/Assistant";
 import PersonIcon from "@mui/icons-material/Person";
 import SendIcon from "@mui/icons-material/Send";
@@ -33,9 +34,11 @@ import {
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import React, { type ReactElement, useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { unstable_usePrompt } from "react-router-dom";
+import superjson from "superjson";
 import { v4 } from "uuid";
+
 
 function Message(props: { message?: Message; history?: boolean; completing?: boolean }): ReactElement {
   const { message = { role: "assistant", content: "" }, history = false, completing = false } = props;
@@ -148,7 +151,10 @@ function Messages(props: { messages: Message[]; maxMessages: number; completing:
   const { hMessages, messages } = splitMessages(props.messages.map((m) => ({ ...m, id: v4() })));
   const { hidden, history } =
     hMessages.length <= 2
-      ? { hidden: [], history: hMessages }
+      ? {
+          hidden: [],
+          history: hMessages,
+        }
       : { hidden: hMessages.slice(0, -2), history: hMessages.slice(-2) };
   const [showHistory, setShowHistory] = useState(false);
 
@@ -196,6 +202,102 @@ export default function ChatPage(): ReactElement {
   const id = params.id!;
 
   return <ChatPageImpl id={id} key={id} />;
+}
+
+function DuplicateWMessageButton(props: { chat: Chat }) {
+  const navigate = useNavigate();
+  const chatStore = useChatStore();
+  const duplicate = () => {
+    const id = chatStore.newChat({ ...props.chat, createdAt: undefined, updatedAt: undefined });
+    navigate(`/chats/${id}/edit`);
+  };
+  return (
+    <Tooltip title="Duplicate this Chat with Messages">
+      <IconButton size="small" onClick={duplicate}>
+        <FileCopyTwoTone />
+      </IconButton>
+    </Tooltip>
+  );
+}
+
+function DuplicateWoMessageButton(props: { chat: Chat }) {
+  const navigate = useNavigate();
+  const chatStore = useChatStore();
+  const duplicate = () => {
+    const id = chatStore.newChat({ ...props.chat, messages: undefined, createdAt: undefined, updatedAt: undefined });
+    navigate(`/chats/${id}/edit`);
+  };
+  return (
+    <Tooltip title="Duplicate this Chat without Messages">
+      <IconButton size="small" onClick={duplicate}>
+        <ContentCopyTwoTone />
+      </IconButton>
+    </Tooltip>
+  );
+}
+
+function ExportButton(props: { chat: Chat }) {
+  const exportChat = () => {
+    const json = superjson.stringify({ ...props.chat });
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${props.chat.fullName()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  return (
+    <Tooltip title="Export this Chat">
+      <IconButton size="small" onClick={exportChat}>
+        <FileDownloadTwoTone />
+      </IconButton>
+    </Tooltip>
+  );
+}
+
+function EditButton(props: { chat: Chat }) {
+  const navigate = useNavigate();
+  const editChat = () => {
+    navigate(`/chats/${props.chat.id}/edit`);
+  };
+  return (
+    <Tooltip title="Edit this Chat">
+      <IconButton size="small" onClick={editChat}>
+        <EditTwoTone />
+      </IconButton>
+    </Tooltip>
+  );
+}
+
+function DeleteButton(props: { chat: Chat }) {
+  const navigate = useNavigate();
+  const chatStore = useChatStore();
+  const [openDialog, setOpenDialog] = useState(false);
+  const deleteChat = () => {
+    chatStore.removeChat(props.chat.id);
+    if (Object.keys(chatStore.chats()).length === 0) {
+      navigate("/");
+    } else {
+      navigate(`/chats/${Object.values(chatStore.chats())[0].id}`);
+    }
+  };
+  return (
+    <Tooltip title="Delete this Chat">
+      <IconButton size="small" onClick={() => setOpenDialog(true)}>
+        <DeleteTwoTone />
+        {openDialog && (
+          <ConfirmDialog
+            title="Delete this Chat? "
+            onConfirmed={() => deleteChat()}
+            onCancelled={() => setOpenDialog(false)}
+          >
+            <b>{props.chat.fullName()}</b> will be lost forever (a long time)...
+          </ConfirmDialog>
+        )}
+      </IconButton>
+    </Tooltip>
+  );
 }
 
 function ChatPageImpl({ id }: { id: string }): ReactElement {
@@ -256,7 +358,13 @@ function ChatPageImpl({ id }: { id: string }): ReactElement {
             {chat.hashtag()}
           </Typography>
         </Box>
-
+        <Stack direction="row" sx={{ my: 0.5 }}>
+          <DuplicateWMessageButton chat={chat} />
+          <DuplicateWoMessageButton chat={chat} />
+          <ExportButton chat={chat} />
+          <EditButton chat={chat} />
+          <DeleteButton chat={chat} />
+        </Stack>
         <Typography variant="overline" gutterBottom>
           {chat.deployment}
         </Typography>
@@ -269,7 +377,6 @@ function ChatPageImpl({ id }: { id: string }): ReactElement {
 
       <TextField
         sx={{ mt: 2 }}
-        autoFocus
         label="User Prompt"
         placeholder={chat.userTemplatePrompt !== "" ? "[Tab] " + chat.userTemplatePrompt : ""}
         fullWidth

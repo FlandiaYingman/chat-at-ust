@@ -1,7 +1,6 @@
 import { completeChat } from "../chats/azure";
 import "./styles/ChatPage.css";
 import { type Message } from "@/chats";
-import { getBalance } from "@/chats/balance.ts";
 import { ChatMarkdown } from "@/components/ChatMarkdown.tsx";
 import { DeploymentMap } from "@/deployments";
 import { useTokenizer } from "@/deployments/tokenizer.ts";
@@ -206,10 +205,6 @@ export default function ChatPage(): ReactElement {
   const [prompt, setPrompt] = React.useState("");
   const [completing, setCompleting] = React.useState(false);
 
-  const refreshBalance = () => {
-    getBalance(settingsStore.azureApiKey, settingsStore.azureApiUrl).then((balance) => chatStore.setBalance(balance));
-  };
-
   const complete = (): void => {
     if (completing) return;
     setCompleting(true);
@@ -225,7 +220,6 @@ export default function ChatPage(): ReactElement {
         (error) => console.error(error),
       )
       .then(() => setCompleting(false))
-      .then(() => refreshBalance());
   };
 
   const { tokens, price } = useTokenizer(DeploymentMap[chat.deployment], prompt);

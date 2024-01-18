@@ -1,8 +1,9 @@
 import type { Chat } from "@/chats";
+import { getBalance } from "@/chats/balance.ts";
 import { ConfirmDialog } from "@/components/ConfirmDialog.tsx";
 import Logo from "@/components/Logo.tsx";
 import { NewChatDialog } from "@/components/NewChat.tsx";
-import { useChatStore } from "@/stores";
+import { useChatStore, useSettingsStore } from "@/stores";
 import { formatHKD } from "@/utils/currency.ts";
 import { ContentCopyOutlined, FileCopyOutlined, FileDownload } from "@mui/icons-material";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -11,24 +12,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import SendIcon from "@mui/icons-material/Send";
-import {
-  Button,
-  Divider,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { ReactElement, useRef, useState } from "react";
+import { Button, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack, Typography } from "@mui/material";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import superjson from "superjson";
+import { useShallow } from "zustand/react/shallow";
+
 
 function ChatListItem(props: { chat: Chat }): ReactElement {
   const { chat } = props;
@@ -177,8 +166,26 @@ function ChatList(props: { chats: Chat[] }): ReactElement {
 }
 
 export function NavigationDrawer(): ReactElement {
-  const chatStore = useChatStore();
+  const [ key, url ] = useSettingsStore(useShallow((s) => [s.azureApiKey, s.azureApiUrl]) );
+
+  const data = useChatStore(s => s.data);
+  const chats = useChatStore(s => s.chats())
+  const [balance, setBalance] = useChatStore(useShallow(s => [s.balance, s.setBalance]))
+
   const [newChatDialogOpen, setNewChatDialogOpen] = useState(false);
+  const updateBalance = async () => { setBalance(await getBalance(key, url)) }
+
+  // 1. Update Balance Periodically
+  useEffect(() => {
+    const interval = setInterval(() => updateBalance(), 60 * 1000)
+    return () => clearInterval(interval)
+  }, [key, url]);
+
+  // 2. Update Balance on Chats Change
+  useEffect(() => {
+    updateBalance()
+  }, [data])
+
   return (
     <>
       <Drawer
@@ -198,7 +205,7 @@ export function NavigationDrawer(): ReactElement {
           <Logo sx={{ px: 2, flexShrink: 0, flexGrow: 0 }} ActionAreaProps={{ sx: { py: 2 } }} />
           <Divider sx={{ flexShrink: 0, flexGrow: 0 }} />
           <Typography sx={{ textAlign: "center" }} variant="overline">
-            Balance: <b>{isNaN(chatStore.balance) ? "N/A" : formatHKD(chatStore.balance)}</b>
+            Balance: <b>{isNaN(balance) ? "N/A" : formatHKD(balance)}</b>
           </Typography>
           <Button
             sx={{ mx: 8, flexShrink: 0, flexGrow: 0 }}
@@ -219,7 +226,7 @@ export function NavigationDrawer(): ReactElement {
           >
             New Chat!
           </Button>
-          <ChatList chats={Object.values(chatStore.chats())} />
+          <ChatList chats={Object.values(chats)} />
         </Stack>
       </Drawer>
       <NewChatDialog open={newChatDialogOpen} onClose={() => setNewChatDialogOpen(false)} />

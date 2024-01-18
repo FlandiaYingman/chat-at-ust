@@ -1,5 +1,4 @@
-import { getBalance } from "@/chats/balance.ts";
-import { useChatStore, useSettingsStore } from "@/stores";
+import { useSettingsStore } from "@/stores";
 import {
   Button,
   Dialog,
@@ -18,12 +17,9 @@ export default function SettingsDialog({ open, onClose }: { open: boolean; onClo
   const [azureApiKey, setAzureApiKey] = React.useState(settingsStore.azureApiKey);
   const [azureApiUrl, setAzureApiUrl] = React.useState(settingsStore.azureApiUrl);
 
-  const chatStore = useChatStore();
-
   const saveSettings = (): void => {
     settingsStore.setAzureApiKey(azureApiKey);
     settingsStore.setAzureApiUrl(azureApiUrl);
-    getBalance(azureApiKey, azureApiUrl).then((balance) => chatStore.setBalance(balance));
     onClose();
   };
 

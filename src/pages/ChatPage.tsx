@@ -10,15 +10,7 @@ import { formatUSD } from "@/utils/currency.ts";
 import { isMarkdown } from "@/utils/markdown.ts";
 import { faMarkdown } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  ContentCopyTwoTone,
-  DeleteTwoTone,
-  EditTwoTone,
-  FileCopyTwoTone,
-  FileDownloadTwoTone,
-  Visibility,
-  VisibilityOff,
-} from "@mui/icons-material";
+import { ContentCopyTwoTone, DeleteTwoTone, EditTwoTone, FileCopyTwoTone, FileDownloadTwoTone, Visibility, VisibilityOff } from "@mui/icons-material";
 import AssistantIcon from "@mui/icons-material/Assistant";
 import PersonIcon from "@mui/icons-material/Person";
 import SendIcon from "@mui/icons-material/Send";
@@ -144,10 +136,7 @@ function Messages(props: { messages: Message[]; maxMessages: number; completing:
   const { hMessages, messages } = splitMessages(props.messages.map((m) => ({ ...m, id: v4() })));
   const { hidden, history } =
     hMessages.length <= 2
-      ? {
-          hidden: [],
-          history: hMessages,
-        }
+      ? { hidden: [], history: hMessages }
       : { hidden: hMessages.slice(0, -2), history: hMessages.slice(-2) };
   const [showHistory, setShowHistory] = useState(false);
 

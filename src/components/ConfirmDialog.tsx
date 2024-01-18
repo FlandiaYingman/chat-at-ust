@@ -1,5 +1,6 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
-import React, { PropsWithChildren, useState } from "react";
+import React, { PropsWithChildren } from "react";
+
 
 type ConfirmDialogProps = PropsWithChildren<{
   onClose?: () => void;
@@ -11,12 +12,10 @@ type ConfirmDialogProps = PropsWithChildren<{
 }>;
 
 export function ConfirmDialog(props: ConfirmDialogProps): React.ReactElement {
-  const [open, setOpen] = useState(props.open ?? true);
   return (
     <Dialog
-      open={open}
+      open={props.open ?? true}
       onClose={() => {
-        setOpen(false);
         props.onClose?.();
         props.onCancelled?.();
       }}
@@ -28,7 +27,6 @@ export function ConfirmDialog(props: ConfirmDialogProps): React.ReactElement {
       <DialogActions sx={{ p: 2 }}>
         <Button
           onClick={() => {
-            setOpen(false);
             props.onCancelled?.();
           }}
           variant="contained"
@@ -37,7 +35,6 @@ export function ConfirmDialog(props: ConfirmDialogProps): React.ReactElement {
         </Button>
         <Button
           onClick={() => {
-            setOpen(false);
             props.onClose?.();
             props.onConfirmed?.();
           }}
@@ -61,12 +58,10 @@ type AlertDialogProps = PropsWithChildren<{
 }>;
 
 export function AlertDialog(props: AlertDialogProps): React.ReactElement {
-  const [open, setOpen] = useState(props.open ?? true);
   return (
     <Dialog
-      open={open}
+      open={props.open ?? true}
       onClose={() => {
-        setOpen(false);
         props.onClose?.();
         props.onCancelled?.();
       }}
@@ -76,7 +71,6 @@ export function AlertDialog(props: AlertDialogProps): React.ReactElement {
       <DialogActions sx={{ p: 2 }}>
         <Button
           onClick={() => {
-            setOpen(false);
             props.onClose?.();
             props.onConfirmed?.();
           }}

@@ -6,6 +6,7 @@ import { Box, Button, Container, styled, Typography } from "@mui/material";
 import { ReactElement, useState } from "react";
 import superjson from "superjson";
 
+
 const VisuallyHiddenInput = styled("input")({
   clipPath: "inset(50%)",
   height: 1,
@@ -25,6 +26,11 @@ export default function ImportStartPage(): ReactElement {
   const importChat = (chat: Chat) => {
     console.log("save", chat);
     chatStore.setChat(chat);
+    const newData = { ...data };
+    delete newData[chat.id];
+    setData(newData);
+  };
+  const discardChat = (chat: Chat) => {
     const newData = { ...data };
     delete newData[chat.id];
     setData(newData);
@@ -62,18 +68,25 @@ export default function ImportStartPage(): ReactElement {
           return (
             <ConfirmDialog
               key={newChat.id + i}
-              title="Replace Existing Chat? "
+              title="Import Chat? "
               open={i === 0}
               onConfirmed={() => importChat(newChat)}
+              onCancelled={() => discardChat(newChat)}
             >
-              The old chat <b>{oldChat?.fullName()}</b> will be replaced by the new chat <b>{newChat.fullName()}</b>{" "}
-              forever (a long time)...
+              <b>{newChat.fullName()}</b> will be imported. The old chat <b>{oldChat?.fullName()}</b> will be replaced
+              by the new chat <b>{newChat.fullName()}</b> forever (a long time)...
             </ConfirmDialog>
           );
         } else {
           return (
-            <AlertDialog key={newChat.id + i} title="Chat Imported" open={i === 0} onClose={() => importChat(newChat)}>
-              <b>{newChat.fullName()}</b> is imported.
+            <AlertDialog
+              key={newChat.id + i}
+              title="Import Chat? "
+              open={i === 0}
+              onConfirmed={() => importChat(newChat)}
+              onCancelled={() => discardChat(newChat)}
+            >
+              <b>{newChat.fullName()}</b> will be imported.
             </AlertDialog>
           );
         }

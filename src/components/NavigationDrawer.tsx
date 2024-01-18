@@ -144,7 +144,11 @@ function ChatListItem(props: { chat: Chat }): ReactElement {
         </MenuItem>
       </Menu>
       {deleteDialogOpen && (
-        <ConfirmDialog title="Delete this Chat? " onConfirmed={deleteChat}>
+        <ConfirmDialog
+          title="Delete this Chat? "
+          onConfirmed={deleteChat}
+          onCancelled={() => setDeleteDialogOpen(false)}
+        >
           <b>
             ${props.chat.name}${props.chat.hashtag()}
           </b>{" "}
@@ -166,25 +170,27 @@ function ChatList(props: { chats: Chat[] }): ReactElement {
 }
 
 export function NavigationDrawer(): ReactElement {
-  const [ key, url ] = useSettingsStore(useShallow((s) => [s.azureApiKey, s.azureApiUrl]) );
+  const [key, url] = useSettingsStore(useShallow((s) => [s.azureApiKey, s.azureApiUrl]));
 
-  const data = useChatStore(s => s.data);
-  const chats = useChatStore(s => s.chats())
-  const [balance, setBalance] = useChatStore(useShallow(s => [s.balance, s.setBalance]))
+  const data = useChatStore((s) => s.data);
+  const chats = useChatStore((s) => s.chats());
+  const [balance, setBalance] = useChatStore(useShallow((s) => [s.balance, s.setBalance]));
 
   const [newChatDialogOpen, setNewChatDialogOpen] = useState(false);
-  const updateBalance = async () => { setBalance(await getBalance(key, url)) }
+  const updateBalance = async () => {
+    setBalance(await getBalance(key, url));
+  };
 
   // 1. Update Balance Periodically
   useEffect(() => {
-    const interval = setInterval(() => updateBalance(), 60 * 1000)
-    return () => clearInterval(interval)
+    const interval = setInterval(() => updateBalance(), 60 * 1000);
+    return () => clearInterval(interval);
   }, [key, url]);
 
   // 2. Update Balance on Chats Change
   useEffect(() => {
-    updateBalance()
-  }, [data])
+    updateBalance();
+  }, [data]);
 
   return (
     <>

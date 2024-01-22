@@ -7,6 +7,10 @@ code {
   padding: 0.05em 0.25em 0.05em 0.25em;
 }
 
+.chat-markdown > :first-child {
+  margin-top: 0 !important;
+}
+
 .chat-markdown > :last-child {
   margin-bottom: 0 !important;
 }

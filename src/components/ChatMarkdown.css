@@ -1,27 +1,10 @@
 code {
-  margin: 0;
-  white-space: break-spaces;
-  background-color: rgb(246, 248, 250);
-  border-radius: 6px;
+  background-color: rgb(246, 248, 250) !important;
+  border-radius: 4px;
 }
 
-pre {
-  padding: 16px;
-  overflow: auto;
-  line-height: 1.45;
-  background-color: rgb(246, 248, 250);
-  border-radius: 6px;
-}
-
-pre > code {
-  display: inline;
-  padding: 0;
-  margin: 0;
-  overflow: visible;
-  line-height: inherit;
-  word-wrap: normal;
-  background-color: transparent;
-  border: 0;
+:not(pre) > code {
+  padding: 0.05em 0.25em 0.05em 0.25em;
 }
 
 .chat-markdown > :last-child {

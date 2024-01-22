@@ -119,7 +119,13 @@ function Message(props: { message?: Message; history?: boolean; completing?: boo
       </Stack>
 
       <Paper
-        sx={{ p: 2, height: "fit-content", flexGrow: 1, ...(history ? { background: grey[100] } : {}) }}
+        sx={{
+          p: 2,
+          minWidth: 0,
+          height: "fit-content",
+          flexGrow: 1,
+          ...(history ? { background: grey[100] } : {}),
+        }}
         variant="outlined"
       >
         <Typography variant="body2" sx={{ overflowWrap: "anywhere" }} component="div">

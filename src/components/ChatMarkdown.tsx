@@ -27,7 +27,7 @@ function code(): (props: DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElem
         language={match[1]}
         style={github}
         customStyle={{ padding: 0, overflowX: "unset" }}
-        PreTag="pre"
+        PreTag="div"
         CodeTag="code"
       >
         {String(children).replace(/\n$/, "")}

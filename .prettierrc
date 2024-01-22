@@ -1,5 +1,7 @@
 {
   "printWidth": 120,
   "proseWrap": "always",
-  "plugins": ["@trivago/prettier-plugin-sort-imports"]
+  "plugins": [
+    "@ianvs/prettier-plugin-sort-imports"
+  ]
 }

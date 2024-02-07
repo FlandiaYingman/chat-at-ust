@@ -1,7 +1,8 @@
-import { type Chat } from "./index";
 import { AzureKeyCredential, ChatRequestMessage, OpenAIClient } from "@azure/openai";
+import { type Chat } from "./index";
 
-export async function completeChat(chat: Chat, azureApiKey: string, azureApiUrl: string): Promise<Chat> {
+
+export async function completeChat(chat: Chat, azureApiKey: string, azureApiUrl: string, retry: number = 5): Promise<Chat> {
   const client = new OpenAIClient(azureApiUrl, new AzureKeyCredential(azureApiKey), {
     allowInsecureConnection: true,
     apiVersion: "2023-05-15",
@@ -41,10 +42,23 @@ export async function completeChat(chat: Chat, azureApiKey: string, azureApiUrl:
           return chat.newMessage("assistant", JSON.stringify(completions), true);
         }
       },
-      (error) => {
-        console.log(error);
-        console.log(chat);
-        return chat.newMessage("assistant", error.message, true );
+      (error: { code: string; message: string }) => {
+        if (error.code === "429") {
+          const regex = /Please retry after (\d+) seconds\./;
+          const match = error.message.match(regex);
+
+          const seconds = match ? parseInt(match[1]) : 10;
+          console.log(`Rate limited. Retrying in ${seconds} seconds. ${retry} retries left.`);
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              resolve(completeChat(chat, azureApiKey, azureApiUrl, retry - 1));
+            }, seconds * 1000);
+          });
+        }
+
+        console.error(error);
+        console.error(chat);
+        return chat.newMessage("assistant", error.message, true);
       },
     );
 }
